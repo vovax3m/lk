@@ -116,10 +116,11 @@ class Funcs {
 			/*
 			Смотрим в кэше сначала, если нет обращаемся к базе (через деплой)
 			*/
-						
+			//echo 'http://deploy.sip64.ru/un/getsaldo/'.$accid;			
 			if(!$m->get($id.'saldo')){
+				
 				$res=file_get_contents('http://deploy.sip64.ru/un/getsaldo/'.$accid);
-				//$res=json_encode($res);
+				//echo json_encode($res);
 				// раз уж получили сохраняем в кэщ на 5 минут
 				$m->set($id.'saldo', $res, time() + 60);
 			}
@@ -135,7 +136,7 @@ class Funcs {
 		/*
 		 получаем список абонентов их типов и состояния регистрации
 		*/
-		function GetNums(){
+		function GetNums($uniq = false){
 			$CI =& get_instance();
 			$CI->load->model('calls_model');
 			$accid =str_replace(",","_",$CI->calls_model->getaccid($CI->input->cookie('auth_id')));;
@@ -150,11 +151,14 @@ class Funcs {
 			
 			if(!$m->get($id.'ext')){
 				//echo 'http://deploy.sip64.ru/un/getnums/'.$accid.'/'.$id;
-				
-				 $f=file_get_contents('http://deploy.sip64.ru/un/getnums/'.$accid);
+				if (isset($uniq) and $uniq){
+					$f=file_get_contents('http://deploy.sip64.ru/un/getnums/'.$accid.'?uniq='.$uniq);
+				}else{
+					$f=file_get_contents('http://deploy.sip64.ru/un/getnums/'.$accid);
+				}
 				 $n=json_decode($f,TRUE);
 				 if($n[12]){
-					// echo $n[1];
+					//print_r( $n[12]);
 					$call=$CI->calls_model->getnums($n[1],$id);
 				 }else{
 					$call=$n[1];
@@ -286,7 +290,7 @@ class Funcs {
 			$l = $CI->config->item('mera_login');
 			$p = $CI->config->item('mera_pass');
 			$h = $CI->config->item('mera_addr');
-			echo $list;
+			//echo $list;
 			if(!($con = ssh2_connect($h, '22')))exit("не могу подключиться к мере по порту 22"); 
 			if(!ssh2_auth_password($con, $l, $p)) exit("логин/пароль некоректен"); 
 			$command="/mera/bin/mp_shell.x show ep | egrep '{$list}' ";

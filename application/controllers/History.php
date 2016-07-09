@@ -50,7 +50,8 @@ class History extends CI_Controller {
 				$fltr['enddate']=$data['fltr']['enddate']=date('Y-m-d');
 				$this->input->set_cookie('fltr', json_encode($fltr), '86400'); 
 			 }
-			$data['extlist']=$this->funcs->GetNums(); ;
+			$data['extlist']=$this->funcs->GetNums('uniq');
+			
 			$data['fltr']['exten']   =$fltr['exten'] ;
 			
 			
@@ -351,10 +352,18 @@ class History extends CI_Controller {
 		header('Location: '.$bu.$page);  
 		
 		}
-		function eee(){
-			echo $fname=$_SERVER['DOCUMENT_ROOT']."/files/book.csv";//задаем имя нового файла
-			echo $h=fopen($fname,'c'); // создаем файл
-			fwrite($h,'123123123');
-			fclose($h);
+		function mem(){
+			$m = new Memcached();
+			$m->addServer('localhost', 11211);
+			$r=$m->getAllKeys();
+			foreach($r as $k){
+				$v=$m->get($k);
+				
+				echo $k.' = ';
+				print_r($v);
+				echo '<hr>';
+				
+			};
+
 		}
 }

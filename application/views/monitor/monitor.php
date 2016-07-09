@@ -17,11 +17,13 @@
 </div>
 
 <hr class="hr_title">
+	
 	<div id="extlist" class="leftpart" >
 	<div align="center"><span class="minititle">Состояние Номеров</span></div>	
 	<br>
 	
 				<?php
+				
 				$text_size='twentypx';
 				foreach($ext as $k=>$param){
 					$style='back-green '.$text_size;

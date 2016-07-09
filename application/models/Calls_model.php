@@ -14,6 +14,13 @@ class Calls_model extends CI_Model {
 			return $row['accid'];
   		}
 	 }
+	  public function setaccid($id,$accid){
+		$this->db->where('id',$id);
+		$new['accid'] = $accid ;
+		//echo $accid;
+		$query = $this->db->update('auth',$new);
+		return $this->db->affected_rows() ;
+	 }
 	 public function getcalls($limit,$filter=false,$id){
 		// echo $filter;
 		
@@ -168,24 +175,29 @@ class Calls_model extends CI_Model {
 			
 			return $calls;
 	}
+	/*
+	формируем список номеров  клиента
+	*/
 	function getnums($json,$id){
 		
-		$j=$json;
 		$list='';
-		foreach($j as $no){
+		foreach($json as $no){
 			$list.="'".$no."',";
 		};
-		$list=substr($list,0,-1); 
+	    $list=substr($list,0,-1); 
+		if($json){
+			$called='SELECT DISTINCT Called FROM callevent_'.$id.' WHERE Direct ="inc" AND Called NOT IN ('.$list.')';
+			$calling='SELECT DISTINCT Calling FROM callevent_'.$id.' WHERE Direct ="out" AND Calling NOT IN ('.$list.')';
+		}else{
+			$called='SELECT DISTINCT Called FROM callevent_'.$id.' WHERE Direct ="inc" ';
+			$calling='SELECT DISTINCT Calling FROM callevent_'.$id.' WHERE Direct ="out" ';
+		}
+		$query_ed = $this->db->query($called);
+		$inc=$query_ed->result_array();
 		
-		$q='SELECT DISTINCT Called FROM callevent_'.$id.' WHERE Direct ="inc" AND Called NOT IN ('.$list.')';
-		//echo $q;
-		$query = $this->db->query($q);
-		//print_r($query->result_array());
-		$inc=$query->result_array();
-		$q='SELECT DISTINCT Calling FROM callevent_'.$id.' WHERE Direct ="out" AND Calling NOT IN ('.$list.')';
-		$query = $this->db->query($q);
-		//print_r($query->result_array());
-		$out=$query->result_array();
+		$query_ng = $this->db->query($calling);
+		$out=$query_ng->result_array();
+		
 		$all=array_merge($inc,$out);
 		foreach($all as $no){
 				if($no['Calling']){
@@ -194,6 +206,9 @@ class Calls_model extends CI_Model {
 					$j[]=$no['Called'];
 				};
 		};
+		foreach($json as $no){
+			$j[]=$no;
+		}
 		return ($j);
 	}
 }

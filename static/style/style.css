@@ -565,7 +565,19 @@ background: #facfa7;
 	z-index:1;
 	
 }
-
+.chooseblock{
+	/*position:absolute;*/
+	float:right;
+	
+	
+}
+.choose{
+   border-radius:2px;
+   font-size:12px ;
+	color:black;
+	line-height:0.8em;
+   
+}
 .inactive{
 	color:grey !important;
 }

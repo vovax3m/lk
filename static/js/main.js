@@ -1,35 +1,51 @@
-function sufl(b,a){
-		var type=$('#spy_type').val(); 
-		
-		$.ajax({
-			type:"GET",
-			url: '/monitor/spy/?a='+a+'&b='+b+'&type'+type,
+function hide(){
+	var count=$("#selected option").size();
+	if (count == 0){
+		$('#selected').hide();
+		$('#submit').hide();
+	}else{
+			$('#selected').show();
+			$('#submit').show();
+	}
+}
+function apply(){
+var sel=$("#sel").text();
+var uid=$('#uid').text();
+//console.log(sel);
+$.ajax({
+			type:"POST",
+			data:{"sel": sel},
+			url: '/ajax/choise/',
 			success: function(data) {
 				//$('#conv_content').html(data);
-				console.log('spy '+data);
+				//console.log(data);
+				cleancache(uid);
+				window.location.reload();
 				
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
 				alert(thrownError); 
 			} 
 		});
-	}
-	
-function drop(ch){
-		//console.log(ch);
-		$.ajax({
-			type:"GET",
-			url: '/monitor/dropcall/?ch='+ch,
+}
+
+function cleancache(uid){
+	$.ajax({
+			type:"POST",
+			//data:{"sel": sel},
+			url: '/ajax/cleancache/'+uid,
 			success: function(data) {
 				//$('#conv_content').html(data);
-				console.log('drop '+data);
+				//console.log(data);
+				//cleancache(uid);
+				//window.location.reload();
 				
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
 				alert(thrownError); 
 			} 
 		});
-	}
+}
 	
 function change_RPP(el){
 	$.ajax({

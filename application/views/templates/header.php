@@ -1,4 +1,10 @@
 
+<?php
+	/* define list of companies and saldos*/
+	$this->load->library('funcs');
+	$s=(json_decode($this->funcs->getsaldo(),TRUE));
+	asort($s);
+?>
 <!doctype html>
 <html>
 <head>
@@ -19,7 +25,13 @@
 	<div id="header" >
 	<div class="lefthead">
 		<a href="<?php echo $base_url;?>" title="Переход к главной странице"><img src="static/img/dialog_logo2.png" class="logo"></a>
-
+		<?php 
+		# choose other company to view if suffix =di_
+		$suff=substr($this->input->cookie('auth_username', TRUE),0,3);
+		if($suff=='di_' or $suff=='DI_' or $suff=='Di_'){
+			include 'choise.php';
+		}
+		?>
 		</div>
 		<div class="exithead" > 
 			
@@ -43,9 +55,8 @@
 				<br>
 				<span class="company_name hand" onclick="$('#rekvizit').toggle();">
 					
-						<?php $this->load->library('funcs');
-						$s=(json_decode($this->funcs->getsaldo(),TRUE));
-						asort($s);
+						<?php
+						//print_r($s);
 						echo '<span title="Название компании">'.$s[0][0].'</span>&nbsp;<span class="balans" title="Остаток кредитного лимита">'.$s[0][1].'</span>&nbsp;<span class="rouble">
 						<i class="fa fa-rub"></i>
 					</span>';

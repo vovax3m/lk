@@ -302,37 +302,29 @@ class Ajax extends CI_Controller {
 			
 		}	
 		
-		function downloadivr(){
-		//	print_r($_GET);
-			if($_GET['fn']){
-				$fn=$_GET['fn'];
-				$vats = $this->config->item('vats');
-				if($_GET['cdr'] and $_GET['date']){
-					$getfile = file_get_contents("http://".$vats."/cabinet/save.php?fn=".$fn.'&cdr=true&date='.$_GET['date']);
-				}else{
-					$getfile = file_get_contents("http://".$vats."/cabinet/save.php?fn=".$fn);
-				}
-				if($getfile){
-					$content = file_get_contents("http://".$vats."/cabinet/files/".$getfile);
-					if(file_put_contents('files/'.$fn, $content)){
-						$path=$this->config->item('base_url');
-						echo '<a href="'.$path.'/files/'.$getfile.'" download="'.$getfile.'">Сохранить файл '.$getfile.'</a>';
-					}
-				}
+		function choise(){
+		
+			if($_POST['sel']){
+				$data=substr($_POST['sel'],0,-1);
+				
+				$this->load->model('calls_model');
+				$id=$this->input->cookie('auth_id', TRUE);
+			 	$result=$this->calls_model->setaccid($id,$data);
+				echo $result;
 			}
+			
 		}
-		/*
-		 генерим звонок
-		*/
-		function click2call($a,$b){
-			$vats = $this->config->item('vats');
-			if($a and $b){
-				$getfile = file_get_contents("http://".$vats."/cabinet/call.php?a=".$a.'&b='.$b);
-				echo $getfile;
-			}
-			//return ($getfile: true ? false);
-			echo $getfile;
+		function cleancache($uid){
+			$m = new Memcached();
+			$m->addServer('localhost', 11211);
+			$r=$m->getAllKeys();
+			$m->delete($uid.'CE');
+			$m->delete('dates'.$uid);
+			$m->delete($uid.'ext');
+			$m->delete($uid.'saldo');
+			echo 1;
 		}
+		
 
 //end of class		
 }		
